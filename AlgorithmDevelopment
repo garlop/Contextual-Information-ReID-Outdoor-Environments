@@ -1,0 +1,109 @@
+Steps developed so far:
+
+1.- output/ -> Contains original images
+
+2.- Execute: GenerateDescriptorFile.py (pending to modify to filter already completed images)
+
+3.- Execute: Escritorio/person-reid-triplet-loss-baseline/script/experiment/GenerateClusters.py ./descriptors.txt Clases/
+
+    Produces: -> Creates the Classes folder and their subfolders
+
+    Clases/n/ -> Folders for each class clustered by the previous command.
+
+4.- Execute: Escritorio/person-reid-triplet-loss-baseline/script/experiment/ClusterVerification.py n
+
+    Produces: -> Moves the verified cluster images to its corresponding folder after visual correction.
+
+5.-  If pending images of properly clusterize step 2, otherwise go to step 6.
+
+6.- Execute: PhotosUnionAndRenaming.py n(Initial Folder) m(Final Folder)
+
+    Produces: -> Renames the images according to the folder they are in, and move them to the /labeledNew/ Folder.
+
+    labeledNew/ -> Images with corrected name according to proper identities.
+
+7.- Execute: infer_images_example.py 
+
+    Produces: -> a json file containing the descriptor features of the images after being processed by the NN. As well as the images where they belong to.
+
+    dataFeatures.json -> a json file with images data in the form of 
+    {
+    'images' : [{
+        'imageName' : 'VCXXXXXX_pI.png',
+        'features' : [ARRAY WITH 2048 features each]
+        }]
+    }
+
+8.- Execute: marks_changes.py.
+
+    Produces: -> same dataFeatures.json file, but with the information in the following structure.
+    
+    dataFeatures.json -> a json file with images data in the form of
+    {
+    'images' : [{
+        'camera' : (int) 1, 2 or 3
+        'imageName' : 'VCXXXXXX_pI.png',
+        'features' : [ARRAY WITH 2048 features each],
+        'latitude' : (float) latitude,
+        'longitude' : (float) longitude,
+        'time' : (string) date and time of picture,
+        'precipIntensity' : value of raining intensity in that moment,
+        'temperature' : value of temperature in that moment,
+        'humidity' : value of humidity in that moment,
+        'pressure' : value of pressure in that moment,
+        'windSpeed' : value of wind Speed in that moment,
+        'windGust' : value of wind Gust in that moment,
+        'cloudCover' : tells if clouds were covering the area,
+        'visibility' : visibility range
+        }]
+    }
+
+9.- Execute: filenamesGenerator.py 
+
+    Produces: -> filesNames.pkl -> a pickle file containing all the names of the images in the folder labeledNew and each one marked as query image
+
+9.- Execute: visualize_rank_list_luis.py
+
+    Produces: -> rankedImages.json -> a json file with images data in the form of
+    [{
+        "images": [
+            {"ranking": "1", "distance": "0.173799", "rankedImage": "V209050_p3.png"}, 
+            {"ranking": "2", "distance": "0.177393", "rankedImage": "V210290_p4.png"}, 
+            {"ranking": "3", "distance": "0.177911", "rankedImage": "V210261_p3.png"}, 
+            {"ranking": "4", "distance": "0.178684", "rankedImage": "V209071_p1.png"}, 
+            {"ranking": "5", "distance": "0.185251", "rankedImage": "V209075_p2.png"}
+        ],
+        "queryImage" : "V209046_p3.png",
+        "rankSize" : 5
+    },{
+        "images": [
+            {"ranking": "1", "distance": "0.173799", "rankedImage": "V209050_p3.png"}, 
+            {"ranking": "2", "distance": "0.177393", "rankedImage": "V210290_p4.png"}, 
+            {"ranking": "3", "distance": "0.177911", "rankedImage": "V210261_p3.png"}, 
+            {"ranking": "4", "distance": "0.178684", "rankedImage": "V209071_p1.png"}, 
+            {"ranking": "5", "distance": "0.185251", "rankedImage": "V209075_p2.png"}
+        ],
+        "queryImage" : "V209046_p3.png",
+        "rankSize" : 5
+    }]
+
+    For every image in the data set.
+
+10.- Execute: feedingPairsDataGenerator.py:
+     It transforms the rankedImages.json and dataFeatures.json in pairs of data, taking queryImage and each ranking image and putting them toghether in a csv in the form
+
+|qIC|qILat|qILong|qIFeat0...qIFeat2047|qITime|qIpreInt|qItemp|qIhum|qIpress|qIWindS|qIWindG|qICloudC|qIVisb|eucDist|rIC|rILat|rILong|rIFeat0...rIFeat2047|rITime|rIpreInt|rItemp|rIhum|qIpress|qIwindS|qIWindG|qICloudC|qIVisib|AreSame|
+
+     Produces: a csv file with the data explained before as data.csv
+
+     data.csv: -> csv with the previously explained data.
+
+11.- Develop DeepNN fed with previous data. 
+
+12.- Save DeepNN predictions to a file to have the new depurated rankings according to likelihood reported by the Neural Network.
+
+13.- Calculate MAP of rankedImages.json vs MAP of output of DeepNN.
+
+14.- Include all steps from before, but without knowing identity (to test with new unseen data).
+
+15.- Create GUI to make navigation through the system easier.
