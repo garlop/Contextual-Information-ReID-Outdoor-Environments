@@ -1,109 +1,163 @@
 Steps developed so far:
 
-1.- output/ -> Contains original images
+1.- Data Labeling Process:
+	1.1.- Unlabeled Data/output/ -> Contains original images
 
-2.- Execute: GenerateDescriptorFile.py (pending to modify to filter already completed images)
+	1.2.- Execute: Scripts/GenerateDescriptorFile.py (pending to modify to filter already completed images)
 
-3.- Execute: Escritorio/person-reid-triplet-loss-baseline/script/experiment/GenerateClusters.py ./descriptors.txt Clases/
+	1.3.- Execute: Scripts/GenerateClusters.py ./imagesDesc2.txt ../Labeled Data/Clases/
 
-    Produces: -> Creates the Classes folder and their subfolders
+    		Produces: -> Creates the Classes folder and their subfolders
 
-    Clases/n/ -> Folders for each class clustered by the previous command.
+    		Clases/n/ -> Folders for each class clustered by the previous command.
 
-4.- Execute: Escritorio/person-reid-triplet-loss-baseline/script/experiment/ClusterVerification.py n
+	1.4.- Execute: Scripts/ClusterVerification.py n
 
-    Produces: -> Moves the verified cluster images to its corresponding folder after visual correction.
+    		Produces: -> Moves the verified cluster images to its corresponding folder after visual correction.
 
-5.-  If pending images of properly clusterize step 2, otherwise go to step 6.
+	1.5.- Execute: Scripts/PhotosUnionAndRenaming.py n(Initial Folder) m(Final Folder)
 
-6.- Execute: PhotosUnionAndRenaming.py n(Initial Folder) m(Final Folder)
+    		Produces: -> Renames the images according to the folder they are in, and move them to the /labeledNew/ Folder.
 
-    Produces: -> Renames the images according to the folder they are in, and move them to the /labeledNew/ Folder.
+    		labeledNew/ -> Images with corrected name according to proper identities.
 
-    labeledNew/ -> Images with corrected name according to proper identities.
+2.- Embedding Data Generation.
+2.1 Model 1
+For the first model, a pre-trained weights file was used, trained over the market1501 dataset.
 
-7.- Execute: infer_images_example.py 
+	2.1.1.- Execute: Scripts/infer_images_example.py --model_weight_file ../ReID Models/person-reid-triplet-loss-baseline/market1501_stride1/model_weight.pth
 
-    Produces: -> a json file containing the descriptor features of the images after being processed by the NN. As well as the images where they belong to.
+    		Produces: -> a json file containing the descriptor features of the images after being processed by the NN. As well as the images where they belong to.
 
-    dataFeatures.json -> a json file with images data in the form of 
-    {
-    'images' : [{
-        'imageName' : 'VCXXXXXX_pI.png',
-        'features' : [ARRAY WITH 2048 features each]
-        }]
-    }
+    		dataFeatures.json -> a json file with images data in the form of 
+    		{
+    		'images' : [{
+        		'imageName' : 'VCXXXXXX_pI.png',
+        		'features' : [ARRAY WITH 2048 features each]
+        		}]
+    		}
 
-8.- Execute: marks_changes.py.
+	2.1.2.- Execute: marks_changes.py.
+		This adds to the data the contextual information, including extra information in case such data is missing.
 
-    Produces: -> same dataFeatures.json file, but with the information in the following structure.
+    		Produces: -> same dataFeatures.json file, but with the information in the following structure.
     
-    dataFeatures.json -> a json file with images data in the form of
-    {
-    'images' : [{
-        'camera' : (int) 1, 2 or 3
-        'imageName' : 'VCXXXXXX_pI.png',
-        'features' : [ARRAY WITH 2048 features each],
-        'latitude' : (float) latitude,
-        'longitude' : (float) longitude,
-        'time' : (string) date and time of picture,
-        'precipIntensity' : value of raining intensity in that moment,
-        'temperature' : value of temperature in that moment,
-        'humidity' : value of humidity in that moment,
-        'pressure' : value of pressure in that moment,
-        'windSpeed' : value of wind Speed in that moment,
-        'windGust' : value of wind Gust in that moment,
-        'cloudCover' : tells if clouds were covering the area,
-        'visibility' : visibility range
-        }]
-    }
+    		dataFeatures.json -> a json file with images data in the form of
+    		{
+    		'images' : [{
+        		'camera' : (int) 1, 2 or 3
+        		'imageName' : 'VCXXXXXX_pI.png',
+        		'features' : [ARRAY WITH 2048 features each],
+        		'latitude' : (float) latitude,
+        		'longitude' : (float) longitude,
+        		'time' : (string) date and time of picture,
+        		'precipIntensity' : value of raining intensity in that moment,
+        		'temperature' : value of temperature in that moment,
+        		'humidity' : value of humidity in that moment,
+        		'pressure' : value of pressure in that moment,
+        		'windSpeed' : value of wind Speed in that moment,
+        		'windGust' : value of wind Gust in that moment,
+        		'cloudCover' : tells if clouds were covering the area,
+        		'visibility' : visibility range
+        		}]
+    		}
 
-9.- Execute: filenamesGenerator.py 
+2.2 Model 2
+For the second model, the model was trained over with our data set, prior to extracting the features and adding the contextual information.
 
-    Produces: -> filesNames.pkl -> a pickle file containing all the names of the images in the folder labeledNew and each one marked as query image
+	2.2.1.-	Execute: NewImagesInFolders.py:
+		It takes the labeled images in the LabeledNew Folder and separates it in a train set, a test set, and a query set, in order to train with this the second model MGN.
 
-9.- Execute: visualize_rank_list_luis.py
+		Produces: A new folder named LabeledNewFolders containing three different subfolders:
+	 	bounding_box_train/    (containing the 80% of the ids in the data)
+	 	bounding_box_test/     (containing the 20% of the ids in the data)
+	 	query/                 (containing every image, since the approach was to use this to produce a ranking of every image in the data)
 
-    Produces: -> rankedImages.json -> a json file with images data in the form of
-    [{
-        "images": [
-            {"ranking": "1", "distance": "0.173799", "rankedImage": "V209050_p3.png"}, 
-            {"ranking": "2", "distance": "0.177393", "rankedImage": "V210290_p4.png"}, 
-            {"ranking": "3", "distance": "0.177911", "rankedImage": "V210261_p3.png"}, 
-            {"ranking": "4", "distance": "0.178684", "rankedImage": "V209071_p1.png"}, 
-            {"ranking": "5", "distance": "0.185251", "rankedImage": "V209075_p2.png"}
-        ],
-        "queryImage" : "V209046_p3.png",
-        "rankSize" : 5
-    },{
-        "images": [
-            {"ranking": "1", "distance": "0.173799", "rankedImage": "V209050_p3.png"}, 
-            {"ranking": "2", "distance": "0.177393", "rankedImage": "V210290_p4.png"}, 
-            {"ranking": "3", "distance": "0.177911", "rankedImage": "V210261_p3.png"}, 
-            {"ranking": "4", "distance": "0.178684", "rankedImage": "V209071_p1.png"}, 
-            {"ranking": "5", "distance": "0.185251", "rankedImage": "V209075_p2.png"}
-        ],
-        "queryImage" : "V209046_p3.png",
-        "rankSize" : 5
-    }]
+	2.2.2.-  ReID Models/ReID-MGN/main.py --mode train --data_path Labeled Data/labeledNewFolders/
 
-    For every image in the data set.
+		Contains the training of the model step
+	2.2.3.-  ReID Models/ReID-MGN/main.py --mode extract --data_path Labeled Data/labeledNewFolders/ --weight drive/'My Drive'/weights/model_100.pt
 
-10.- Execute: feedingPairsDataGenerator.py:
-     It transforms the rankedImages.json and dataFeatures.json in pairs of data, taking queryImage and each ranking image and putting them toghether in a csv in the form
+		Produces: A csv file called MGNFeatures.csv containing the descriptors of the images in the dataset. along with its name, in the form |feat0|feat1|...|feat2047|imageName|
 
-|qIC|qILat|qILong|qIFeat0...qIFeat2047|qITime|qIpreInt|qItemp|qIhum|qIpress|qIWindS|qIWindG|qICloudC|qIVisb|eucDist|rIC|rILat|rILong|rIFeat0...rIFeat2047|rITime|rIpreInt|rItemp|rIhum|qIpress|qIwindS|qIWindG|qICloudC|qIVisib|AreSame|
+	2.2.4.- Execute: Scripts/infer_images.py 
 
-     Produces: a csv file with the data explained before as data.csv
+    		Produces: -> a json file containing the descriptor features of the images after being processed by the NN. As well as the images where they belong to.
 
-     data.csv: -> csv with the previously explained data.
+    		dataMGNFeatures.json -> a json file with images data in the form of 
+    		{
+    		'images' : [{
+        		'imageName' : 'VCXXXXXX_pI.png',
+        		'features' : [ARRAY WITH 2048 features each]
+        		}]
+    		}
 
-11.- Develop DeepNN fed with previous data. 
+	2.2.5.- Execute: marks_changesMGN.py.
+		This adds to the data the contextual information, including extra information in case such data is missing.
 
-12.- Save DeepNN predictions to a file to have the new depurated rankings according to likelihood reported by the Neural Network.
+    		Produces: -> same dataMGNFeatures.json file, but with the information in the following structure.
+    
+    		dataMGNFeatures.json -> a json file with images data in the form of
+    		{
+    		'images' : [{
+        		'camera' : (int) 1, 2 or 3
+        		'imageName' : 'VCXXXXXX_pI.png',
+        		'features' : [ARRAY WITH 2048 features each],
+        		'latitude' : (float) latitude,
+        		'longitude' : (float) longitude,
+        		'time' : (string) date and time of picture,
+        		'precipIntensity' : value of raining intensity in that moment,
+        		'temperature' : value of temperature in that moment,
+        		'humidity' : value of humidity in that moment,
+        		'pressure' : value of pressure in that moment,
+        		'windSpeed' : value of wind Speed in that moment,
+        		'windGust' : value of wind Gust in that moment,
+        		'cloudCover' : tells if clouds were covering the area,
+        		'visibility' : visibility range
+        		}]
+    		}
 
-13.- Calculate MAP of rankedImages.json vs MAP of output of DeepNN.
+2.3 Model 3
+	2.3.1.- Execute MLFNModel.ipynb. The first part makes use of dataFeatures.json from model 1, to obtain the images names, ids and cameras. Such information is provided to the code, creating an array of image names for training and for testing of the model. 
 
-14.- Include all steps from before, but without knowing identity (to test with new unseen data).
+After the model is trained, the code allows to transform to features any image we require, so we process every image in the image data set and save the features.
 
-15.- Create GUI to make navigation through the system easier.
+When the training is finished, a dataMLFNfeatures.json file is produced including the already existing contextual information from the original file.
+	
+		Produces:
+    		dataMGNFeatures.json -> a json file with images data in the form of
+    		{
+    		'images' : [{
+        		'camera' : (int) 1, 2 or 3
+        		'imageName' : 'VCXXXXXX_pI.png',
+        		'features' : [ARRAY WITH 2048 features each],
+        		'latitude' : (float) latitude,
+        		'longitude' : (float) longitude,
+        		'time' : (string) date and time of picture,
+        		'precipIntensity' : value of raining intensity in that moment,
+        		'temperature' : value of temperature in that moment,
+        		'humidity' : value of humidity in that moment,
+        		'pressure' : value of pressure in that moment,
+        		'windSpeed' : value of wind Speed in that moment,
+        		'windGust' : value of wind Gust in that moment,
+        		'cloudCover' : tells if clouds were covering the area,
+        		'visibility' : visibility range
+        		}]
+    		}
+
+3.- Neural Network Input Formating.
+3.1.- Model 1
+3.1.1 Execute inputNNGenerator.py
+	Produces:
+	data3.csv file containing the data in the format the neural network expects it to be.
+3.2.- Model 2
+3.2.1 Execute inputNNGeneratorMGN.py
+	Produces:
+	data3MGN.csv file containing the data in the format the neural network expects it to be.
+3.3.- Model 3
+3.3.1 Execute inputNNGenerator.py
+	Produces:
+	data3MLFN.csv file containing the data in the format the neural network expects it to be.
+
+4.- Siamesse Network Training
+4.1 .- Execute ReidNueralNetwork3.ipynb to produce the results and the evaluation obtained by the model.
