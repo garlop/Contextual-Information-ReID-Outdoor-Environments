@@ -2,3 +2,11 @@
 3Unlabeled Data/
 7Data Features/
 4Scripts/Data Labeling Process/imagesDesc2.txt
+5Labeled Data/
+.ipynb_checkpoints
+.gitattributes
+6ReID Models/MLFN Model/reid-data/market1501/Market-1501-v15.09.15/
+6ReID Models/MLFN Model/log/
+6ReID Models/ReID-MGN/model.pt
+8Data Features and Context Jsons/
+9Data Features and Context csv/
