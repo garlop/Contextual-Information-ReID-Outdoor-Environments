@@ -4,7 +4,7 @@ import re
 import shutil
 import os
 
-folder = './labeledNewFolders/'
+folder = '../../5Labeled Data/labeledNewFolders/'
 for filename in os.listdir(folder):
     file_path = os.path.join(folder, filename)
     try:
@@ -15,14 +15,14 @@ for filename in os.listdir(folder):
     except Exception as e:
         print('Failed to delete %s. Reason: %s' % (file_path, e))
 
-sourcePath = r'./labeledNew/'
+sourcePath = r'../../5Labeled Data/labeledNew/'
 onlyfiles = [f for f in listdir(sourcePath) if isfile(join(sourcePath, f))]
 
 for file in onlyfiles:
     result = re.search(r'_p\d*',file)
     id = result.group()[2:]
 
-    destinationPath = r'./labeledNewFolders/'+id
+    destinationPath = r'../../5Labeled Data/labeledNewFolders/'+id
 
     if not os.path.exists(destinationPath):
         os.makedirs(destinationPath)
@@ -37,10 +37,10 @@ onlyfolders = [fold for fold in listdir(folder) if not isfile(join(folder, fold)
 test_folders = onlyfolders[int(len(onlyfolders)*.8):]
 train_folders = onlyfolders[:int(len(onlyfolders)*.8)]
 
-trainfolder = r'./labeledNewFolders/bounding_box_train/'
-testfolder = r'./labeledNewFolders/bounding_box_test/'
+trainfolder = r'../../5Labeled Data/labeledNewFolders/bounding_box_train/'
+testfolder = r'../../5Labeled Data/labeledNewFolders/bounding_box_test/'
 
-queryfolder = r'./labeledNewFolders/query/'
+queryfolder = r'../../5Labeled Data/labeledNewFolders/query/'
 
 if not os.path.exists(trainfolder):
     os.makedirs(trainfolder)
