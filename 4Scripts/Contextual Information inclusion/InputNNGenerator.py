@@ -12,7 +12,7 @@ def datetime_to_float(date):
     return total_seconds
 
 def searchImageMetaData(imageName, dictionary):
-    imageName = "../../5Labeled Data/labeledNew/"+imageName
+    #imageName = "../../5Labeled Data/labeledNew/"+imageName
     Lat = dictionary[imageName][0]
     Long = dictionary[imageName][1]
     Feat = dictionary[imageName][2]
@@ -30,8 +30,8 @@ def searchImageMetaData(imageName, dictionary):
 dictionary = defaultdict(list)
 isEmptyField = False
 
-#with open('../../8Data Features and Context Jsons/dataFeatures.json', 'r') as imagesFeatures:
-with open('../../8Data Features and Context Jsons/dataFeaturesMLFN.json', 'r') as imagesFeatures:
+with open('../../8Data Features and Context Jsons/dataFeatures.json', 'r') as imagesFeatures:
+#with open('../../8Data Features and Context Jsons/dataFeaturesMLFN.json', 'r') as imagesFeatures:
     data = json.load(imagesFeatures)
     images = data['images']
     count = 0
@@ -72,13 +72,13 @@ count = 0
 
 IFeatHeaders=[]
 
-#for i in range(0,2048):
-for i in range(0,1024):
+for i in range(0,2048):
+#for i in range(0,1024):
     print(i)
     IFeatHeaders.append("IFeat"+str(i))
 
-#with open('../../9Data Features and Context csv/data3.csv', 'a+', newline='') as csvData:
-with open('../../9Data Features and Context csv/data3MLFN.csv', 'a+', newline='') as csvData:
+with open('../../9Data Features and Context csv/data3.csv', 'a+', newline='') as csvData:
+#with open('../../9Data Features and Context csv/data3MLFN.csv', 'a+', newline='') as csvData:
     writer = csv.writer(csvData, delimiter='|')
     headers = ['C', 'Lat', 'Long']
     headers.extend(feat for feat in IFeatHeaders)
@@ -90,6 +90,7 @@ csvData.close()
 
 for image in images:
     imageNameParts = image["imageName"].split("/")
+    imageNameWhole = image["imageName"]
     ImageName = imageNameParts[-1:][0]
     print(ImageName)
     m = re.search('_p[0-9]*',ImageName)
@@ -97,9 +98,9 @@ for image in images:
     C = ImageName[1]
     count = count + 1
     print("saving data of image:"+ImageName+" image "+str(count)+" of "+str(len(images)))
-    ILat, ILong, IFeat, ITime, IpreInt, Itemp, Ihum, Ipress, IWindS, IWindG, ICloudC, IVisb = searchImageMetaData(ImageName, dictionary)
-#    with open('../../9Data Features and Context csv/data3.csv', 'a+', newline='') as csvData:
-    with open('../../9Data Features and Context csv/data3MLFN.csv', 'a+', newline='') as csvData:
+    ILat, ILong, IFeat, ITime, IpreInt, Itemp, Ihum, Ipress, IWindS, IWindG, ICloudC, IVisb = searchImageMetaData(imageNameWhole, dictionary)
+    with open('../../9Data Features and Context csv/data3.csv', 'a+', newline='') as csvData:
+#    with open('../../9Data Features and Context csv/data3MLFN.csv', 'a+', newline='') as csvData:
         if Itemp == "":
             print("row Empty, not saving")
         else:

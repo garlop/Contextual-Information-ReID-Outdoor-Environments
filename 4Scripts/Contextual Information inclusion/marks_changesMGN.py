@@ -47,26 +47,26 @@ def switch(camId):
     function = switcher.get(camId)
     return function
 
-filename = '../../7Data Features/dataFeatures.json'
-filename = '../../7Data Features/dataMGNFeatures.json'
+#filename = '../../7Data Features/dataFeatures.json'
+filename2 = '../../7Data Features/dataMGNFeatures.json'
 
-with open(filename) as json_file:
-    data = json.load(json_file)
+#with open(filename) as json_file:
+#    data = json.load(json_file)
 
 with open(filename2) as json_file2:
     data2 = json.load(json_file2)
 
-for i in range(0,len(data['images'])):
-    img = data['images'][i]
+for i in range(0,len(data2['images'])):
+    img = data2['images'][i]
     img_name = img['imageName']
     imageName = re.search('V(.+?).png', img_name).group(0)
-    for j in data2['images']:
-        img_name2 = j['imageName']
-        imageName2 = re.search('V(.+?).png', img_name2).group(0)
-        if imageName2 == imageName:
-            features = {'features' : j['features']}
-            img.update(features)
-            break    
+    #for j in data2['images']:
+    #    img_name2 = j['imageName']
+    #    imageName2 = re.search('V(.+?).png', img_name2).group(0)
+    #    if imageName2 == imageName:
+    #        features = {'features' : j['features']}
+    #        img.update(features)
+    #        break    
 
     print("reviewing an image", img['imageName'])
 
@@ -120,7 +120,7 @@ for i in range(0,len(data['images'])):
             'visibility' : visibility}
 
         img.update(dataObtained)
-        data['images'][i] = img
+        data2['images'][i] = img
         print("updating values obtained")
 
     else:
@@ -174,7 +174,7 @@ for i in range(0,len(data['images'])):
                     'visibility' : visibility}
 
                 img.update(dataObtained)
-                data['images'][i] = img
+                data2['images'][i] = img
                 print("updating values obtained")
                 break
 
@@ -193,12 +193,12 @@ for i in range(0,len(data['images'])):
                 'visibility' : visibility}
 
             img.update(dataObtained)
-            data['images'][i] = img
+            data2['images'][i] = img
             print("updating values obtained")
 
-json_file.close()
+#json_file.close()
 json_file2.close()
 
 with open(filename2, 'w') as jsonfile:
-    json.dump(data, jsonfile)
+    json.dump(data2, jsonfile)
 jsonfile.close()
