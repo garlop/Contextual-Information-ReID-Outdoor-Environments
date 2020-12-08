@@ -167,3 +167,5 @@ When the training is finished, a dataMLFNfeatures.json file is produced includin
 6.- Siamesse Network Training
 6.1 .- 	Execute: ReidNueralNetwork3.ipynb 
 	Produces: the results and the evaluation obtained by the model.
+
+https://www.weather.gov/epz/wxcalc_windconvert
