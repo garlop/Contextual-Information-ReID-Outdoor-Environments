@@ -10,7 +10,9 @@
 7Data Features/dataMGNFeatures.json
 7Data Features/MGNFeatures.csv
 4Scripts/Data Labeling Process/imagesDesc2.txt
-5Labeled Data/
+5Labeled Data/Clases/
+5Labeled Data/labeledNew/
+5Labeled Data/labeledNewFolders/
 .ipynb_checkpoints
 .gitattributes
 6ReID Models/MLFN Model/reid-data/market1501/Market-1501-v15.09.15/
