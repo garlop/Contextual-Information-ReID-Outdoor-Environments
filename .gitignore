@@ -6,7 +6,9 @@
 3Unlabeled Data/output/
 3Unlabeled Data/Mixed Data/
 3Unlabeled Data/IMG_1741/
-7Data Features/
+7Data Features/dataFeatures.json
+7Data Features/dataMGNFeatures.json
+7Data Features/MGNFeatures.csv
 4Scripts/Data Labeling Process/imagesDesc2.txt
 5Labeled Data/
 .ipynb_checkpoints
