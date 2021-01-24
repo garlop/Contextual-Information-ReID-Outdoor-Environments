@@ -74,9 +74,9 @@ class Application(Frame):
         canvas.create_text(500,400,fill="darkblue",font="Times 20 italic bold",
                         text=auximg3)
         canvas.pack()      
-        img1 = PhotoImage(master = canvas, file="../../3Unlabeled Images/output/"+auximg1)
-        img2 = PhotoImage(master = canvas, file="../--/3Unlabeled Images/output/"+auximg2)
-        img3 = PhotoImage(master = canvas, file="../../3Unlabeled Images/output/"+auximg3)
+        img1 = PhotoImage(master = canvas, file="../../3Unlabeled Data/output/"+auximg1)
+        img2 = PhotoImage(master = canvas, file="../../3Unlabeled Data/output/"+auximg2)
+        img3 = PhotoImage(master = canvas, file="../../3Unlabeled Data/output/"+auximg3)
         print(auximg1)
         print(auximg2)
         print(auximg3)
